@@ -1,25 +1,19 @@
-# validador_anuncio_app.py
+# validador_anuncio_app.py (MVP Simplificado)
 
 import requests
 from bs4 import BeautifulSoup
 import streamlit as st
 from urllib.parse import urlparse
 import pandas as pd
-import io
-from reportlab.lib.pagesizes import letter
-from reportlab.platypus import Table, TableStyle, Paragraph, SimpleDocTemplate, Spacer, Image
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib import colors
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 PALAVRAS_CHAVE = ["tênis", "mochila", "smartphone", "calça", "notebook", "sapato", "jaqueta"]
 
 st.set_page_config(page_title="Validador de Anúncios", layout="centered")
-st.title("🔎 Validador de Anúncios de Marketplace")
+st.title("🔎 Validador de Anúncios de Marketplace (MVP)")
 
 st.markdown("""
-Este app analisa a qualidade de anúncios em marketplaces como Mercado Livre, Shopee e Amazon, baseado em critérios como título, SEO, imagens, descrições, vídeos e avaliações.
+Este app analisa critérios básicos de anúncios em marketplaces como Mercado Livre.
+Versão simplificada para MVP funcional: analisando título e quantidade de imagens.
 """)
 
 def detectar_marketplace(url):
@@ -34,54 +28,40 @@ def detectar_marketplace(url):
         return "desconhecido"
 
 def analisar_anuncio_mercadolivre(url):
-    headers = {
-        "User-Agent": "Mozilla/5.0"
-    }
+    headers = {"User-Agent": "Mozilla/5.0"}
     try:
         response = requests.get(url, headers=headers)
         soup = BeautifulSoup(response.text, 'html.parser')
 
-        # Título
         titulo_tag = soup.find('h1', class_='ui-pdp-title')
         titulo = titulo_tag.text.strip() if titulo_tag else "Não encontrado"
-
-        # Imagens
-        imagens = soup.select('figure.ui-pdp-gallery__figure img')
-        num_imagens = len(imagens)
-
-        # Vídeo (melhor detecção)
-        tem_video = bool(soup.select_one('section.clip-wrapper') or soup.select_one('iframe[src*="youtube"]'))
-
-        # Avaliações
-        script_ld_json = soup.find('script', type='application/ld+json')
-        nota_media, qtd_avaliacoes = None, None
-        if script_ld_json:
-            import json
-            try:
-                data = json.loads(script_ld_json.string)
-                if isinstance(data, dict):
-                    review = data.get("aggregateRating", {})
-                    nota_media = float(review.get("ratingValue", 0))
-                    qtd_avaliacoes = int(review.get("reviewCount", 0))
-            except:
-                pass
+        num_imagens = len(soup.select('figure.ui-pdp-gallery__figure img'))
 
         return {
-            "Tem título": bool(titulo_tag),
+            "Título": titulo,
             "Título SEO (40-80 chars)": 40 <= len(titulo) <= 80,
             "Título com palavra-chave": any(p.lower() in titulo.lower() for p in PALAVRAS_CHAVE),
             "Quantidade de imagens": num_imagens,
-            "Tem vídeo": tem_video,
-            "Tem descrição": True,
-            "Tem bullet points": True,
-            "Tem avaliações": qtd_avaliacoes is not None,
-            "Nota média": nota_media,
-            "Total de avaliações": qtd_avaliacoes,
-            "Pontuação total": f"7/8"
+            "Vídeo": "(não disponível)",
+            "Avaliações": "(não disponível)",
+            "Nota média": "(não disponível)",
         }
     except Exception as e:
         return {"Erro": str(e)}
 
-# (restante do app permanece igual, comparações, gráficos e exportações)
-# O código do app continua a partir daqui sem alteração estrutural
-# Apenas a função de análise do Mercado Livre foi atualizada com scraping real
+st.markdown("## 🔗 Analisar anúncio")
+url = st.text_input("Cole o link do anúncio do Mercado Livre")
+if st.button("Validar") and url:
+    marketplace = detectar_marketplace(url)
+    if marketplace == "mercadolivre":
+        resultado = analisar_anuncio_mercadolivre(url)
+        st.subheader("📋 Resultado da Análise")
+        st.json(resultado)
+    else:
+        st.warning("Por enquanto só analisamos anúncios do Mercado Livre.")
+
+st.markdown("""
+---
+🧪 Versão simplificada para MVP funcional. Em breve: integração com Shopee, Amazon e melhorias com IA.\n
+Desenvolvido por [**Mateus Nascimento**](https://www.linkedin.com/in/mateus-nascimento-6b918a4b/)
+""", unsafe_allow_html=True)
