@@ -47,7 +47,12 @@ def analisar_anuncio_mercadolivre(url):
         imagens = soup.select('figure.ui-pdp-gallery__figure img')
         num_imagens = len(imagens)
 
-        tem_video = bool(soup.select_one('div.ui-pdp-video') or soup.select_one('iframe'))
+        tem_video = bool(
+            soup.select_one('section.clip-wrapper') or 
+            soup.select_one('div.ui-pdp-video') or 
+            soup.select_one('iframe[src*="youtube"]')
+        )
+
 
         avaliacao_tag = soup.select_one('span.ui-review-capabilities__rating__average')
         nota_media = float(avaliacao_tag.text.strip().replace(',', '.')) if avaliacao_tag else None
