@@ -20,7 +20,7 @@ st.title("🔎 Validador de Anúncios de Marketplace")
 
 st.markdown("""
 Este app analisa a qualidade de anúncios em marketplaces como Mercado Livre, Shopee e Amazon, baseado em critérios como título, SEO, imagens, descrições, vídeos e avaliações.
-\"\"\")
+""")
 
 def detectar_marketplace(url):
     dominio = urlparse(url).netloc
@@ -43,7 +43,7 @@ def gerar_grafico_barras(pontuacoes, nomes):
     fig.savefig(buffer, format='png')
     buffer.seek(0)
     return buffer
-def gerar_pdf_comparativo_multiplos(resultados, nomes):
+    def gerar_pdf_comparativo_multiplos(resultados, nomes):
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=letter)
     styles = getSampleStyleSheet()
@@ -156,5 +156,4 @@ st.markdown("""
 ---
 Desenvolvido por [**Mateus Nascimento**](https://www.linkedin.com/in/mateus-nascimento-6b918a4b/)
 """, unsafe_allow_html=True)
-
 
