@@ -18,7 +18,7 @@ PALAVRAS_CHAVE = ["tênis", "mochila", "smartphone", "calça", "notebook", "sapa
 st.set_page_config(page_title="Validador de Anúncios", layout="centered")
 st.title("🔎 Validador de Anúncios de Marketplace")
 
-st.markdown(\"\"\"
+st.markdown("""
 Este app analisa a qualidade de anúncios em marketplaces como Mercado Livre, Shopee e Amazon, baseado em critérios como título, SEO, imagens, descrições, vídeos e avaliações.
 \"\"\")
 
