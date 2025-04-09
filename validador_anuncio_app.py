@@ -43,7 +43,7 @@ def gerar_grafico_barras(pontuacoes, nomes):
     fig.savefig(buffer, format='png')
     buffer.seek(0)
     return buffer
-    def gerar_pdf_comparativo_multiplos(resultados, nomes):
+def gerar_pdf_comparativo_multiplos(resultados, nomes):
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=letter)
     styles = getSampleStyleSheet()
