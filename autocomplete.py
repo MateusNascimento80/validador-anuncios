@@ -1,25 +1,27 @@
-# autocomplete.py
-
 import requests
+from bs4 import BeautifulSoup
 
-def get_autocomplete_keywords(base_keyword: str):
+def get_autocomplete_keywords(query):
+    url = f"https://lista.mercadolivre.com.br/{query.replace(' ', '-')}"
+    headers = {
+        "User-Agent": "Mozilla/5.0"
+    }
+
     try:
-        url = f"https://api.mercadolibre.com/sites/MLB/autosuggest?showFilters=false&limit=10&q={base_keyword}"
-        response = requests.get(url)
-        response.raise_for_status()
-        data = response.json()
+        response = requests.get(url, headers=headers, timeout=10)
+        if response.status_code != 200:
+            raise Exception(f"Erro HTTP: {response.status_code}")
+
+        soup = BeautifulSoup(response.text, "html.parser")
 
         suggestions = []
-        for term in data.get("suggested_queries", []):
-            suggestion = term.get("q")
-            if suggestion:
-                suggestions.append(suggestion)
+        for item in soup.select("a.ui-search-link__title-card, a.ui-search-item__group__element"):
+            text = item.get_text(strip=True).lower()
+            if text and query.lower() in text:
+                suggestions.append(text)
 
-        return suggestions
+        return list(set(suggestions))[:10]
 
-    except requests.exceptions.RequestException as e:
-        print("Erro na requisição de autocomplete:", e)
-        return []
     except Exception as e:
-        print("Erro inesperado:", e)
+        print(f"[Erro get_autocomplete_keywords] {e}")
         return []
