@@ -24,7 +24,7 @@ def obter_autocomplete_ml(termo):
     try:
         url = f"https://api.mercadolibre.com/sites/MLB/autosuggest?showFilters=true&limit=20&q={quote(termo)}"
         res = requests.get(url)
-        sugestoes = res.json().get("suggested_queries", [])
+        sugestoes = get_autocomplete_keywords(palavra_base)
         palavras = []
         for s in sugestoes:
             palavras += s.get("q", "").lower().split()
