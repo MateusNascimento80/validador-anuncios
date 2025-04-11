@@ -1,5 +1,5 @@
 # validador_anuncio_app.py (com busca automática de palavras-chave via autocomplete do Mercado Livre)
-
+from autocomplete import get_autocomplete_keywords
 import requests
 from bs4 import BeautifulSoup
 import streamlit as st
